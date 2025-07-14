@@ -1,4 +1,4 @@
-name: Python application
+name: GitHub Tests (Unit + Static)
 
 on:
   push:
@@ -16,12 +16,17 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.9
+        python-version: 3.11
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install flake8 pylint
+
+    - name: Run static code analysis
+      run: |
+        flake8 . --max-line-length=120
+        pylint calc.py
 
     - name: Run unit tests
       run: |
