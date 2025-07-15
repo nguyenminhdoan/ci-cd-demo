@@ -2,6 +2,7 @@ import mysql.connector
 import unittest
 import os
 
+
 class TestMySQLConnection(unittest.TestCase):
     def test_connection(self):
         connection = mysql.connector.connect(
@@ -14,5 +15,7 @@ class TestMySQLConnection(unittest.TestCase):
         self.assertTrue(connection.is_connected())
         connection.close()
 
+
 if __name__ == '__main__':
     unittest.main()
+
