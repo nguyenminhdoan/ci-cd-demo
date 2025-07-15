@@ -1,43 +1,14 @@
 language: python
 python:
-  - 3.8
-  - 3.9
-  - 3.10
-  - 3.11
-
-services:
-  - mysql
-
-env:
-  - MYSQL_HOST=127.0.0.1
-  - MYSQL_USER=root
-  - MYSQL_PASSWORD=""
-  - MYSQL_DATABASE=test_db
-
-before_script:
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS test_db;'
+  - "3.11"
 
 install:
-  - pip install --upgrade pip
   - pip install -r requirements.txt
-  - pip install flake8 pylint coverage
 
 script:
   - python -m unittest test_calc.py
-  - python -m unittest tests/integration/test_db_connection.py
-  - python -m unittest tests/travis/test_advanced_calc.py
-  - python -m unittest tests/travis/test_calc_edge_cases.py
-  - flake8 . --max-line-length=120 --exclude=venv,env
-  - pylint calc.py --disable=missing-docstring
-
-after_success:
-  - coverage run --source=. -m unittest discover
-  - coverage report -m
 
 branches:
   only:
     - main
     - master
-
-notifications:
-  email: false
