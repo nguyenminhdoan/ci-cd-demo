@@ -1,2 +1,6 @@
 pytest
 mysql-connector-python
+flake8
+pylint
+coverage
+selenium

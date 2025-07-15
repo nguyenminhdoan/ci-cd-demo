@@ -2,32 +2,32 @@ name: GitHub Tests (Unit + Static)
 
 on:
   push:
-    branches: [ master ]
+    branches: [main, master]
   pull_request:
-    branches: [ master ]
+    branches: [main, master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.11
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        pip install flake8 pylint
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install flake8 pylint
 
-    - name: Run static code analysis
-      run: |
-        flake8 . --max-line-length=120
-        pylint calc.py
+      - name: Run static code analysis
+        run: |
+          flake8 . --max-line-length=120
+          pylint calc.py
 
-    - name: Run unit tests
-      run: |
-        python -m unittest test_calc.py
+      - name: Run unit tests
+        run: |
+          python -m unittest test_calc.py
