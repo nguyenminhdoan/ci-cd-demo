@@ -31,3 +31,5 @@ jobs:
       - name: Run unit tests
         run: |
           python -m unittest test_calc.py
+          python -m unittest tests/github/test_calc_validation.py
+          python -m unittest tests/github/test_calc_performance.py
