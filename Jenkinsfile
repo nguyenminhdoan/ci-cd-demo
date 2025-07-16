@@ -27,7 +27,12 @@ pipeline {
             steps {
                 echo 'Installing dependencies...'
                 sh '''
-                    pip3 install -r requirements.txt
+                    # Create virtual environment
+                    python3 -m venv venv
+                    
+                    # Activate virtual environment and install dependencies
+                    . venv/bin/activate
+                    pip install -r requirements.txt
                 '''
             }
         }
@@ -36,6 +41,7 @@ pipeline {
             steps {
                 echo 'Running static code analysis...'
                 sh '''
+                    . venv/bin/activate
                     flake8 . --max-line-length=120 --exclude=venv,__pycache__
                     pylint calc.py || true
                 '''
@@ -46,9 +52,10 @@ pipeline {
             steps {
                 echo 'Running unit tests...'
                 sh '''
-                    python3 -m unittest test_calc.py
-                    python3 -m unittest tests/github/test_calc_validation.py
-                    python3 -m unittest tests/github/test_calc_performance.py
+                    . venv/bin/activate
+                    python -m unittest test_calc.py
+                    python -m unittest tests/github/test_calc_validation.py
+                    python -m unittest tests/github/test_calc_performance.py
                 '''
             }
         }
@@ -57,6 +64,7 @@ pipeline {
             steps {
                 echo 'Running test coverage...'
                 sh '''
+                    . venv/bin/activate
                     coverage run -m unittest discover -s . -p "test_*.py"
                     coverage report
                     coverage html
