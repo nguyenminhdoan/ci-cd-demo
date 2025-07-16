@@ -1,4 +1,4 @@
-name: GitHub Tests (Unit + Static)
+name: CI/CD Pipeline - Tests & Deploy
 
 on:
   push:
@@ -6,30 +6,100 @@ on:
   pull_request:
     branches: [main, master]
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
-  build:
+  # CI Job - Run Tests
+  test:
     runs-on: ubuntu-latest
+    name: 🧪 Run Tests & Quality Checks
 
     steps:
-      - uses: actions/checkout@v3
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: 🐍 Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install flake8 pylint
+          pip install flake8 pylint pytest coverage
 
-      - name: Run static code analysis
+      - name: 🔍 Run static code analysis
         run: |
           flake8 . --max-line-length=120
           pylint calc.py
 
-      - name: Run unit tests
+      - name: 🧪 Run unit tests
         run: |
-          python -m unittest test_calc.py
-          python -m unittest tests/github/test_calc_validation.py
-          python -m unittest tests/github/test_calc_performance.py
+          python -m pytest test_calc.py -v
+          python -m pytest tests/github/test_calc_validation.py -v
+          python -m pytest tests/github/test_calc_performance.py -v
+
+      - name: 📊 Generate test coverage
+        run: |
+          python -m coverage run -m pytest test_calc.py
+          python -m coverage report
+
+      - name: 📄 Generate HTML report
+        run: |
+          python generate_report.py
+
+      - name: 📤 Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: docs/
+
+  # CD Job - Deploy to GitHub Pages
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: test
+    runs-on: ubuntu-latest
+    name: 🚀 Deploy to GitHub Pages
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: 📦 Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install flake8 pylint pytest coverage
+
+      - name: 📄 Generate deployment report
+        run: |
+          python generate_report.py
+
+      - name: 🔧 Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: 📤 Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: './docs'
+
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
