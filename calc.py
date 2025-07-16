@@ -1,4 +1,4 @@
-"""Simple calculator module with basic arithmetic operations."""
+"""Simple calculator module with basic arithmetic operations.."""
 
 # Test Travis CI trigger
 
