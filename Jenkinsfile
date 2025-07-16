@@ -17,6 +17,9 @@ pipeline {
             steps {
                 echo 'Setting up Python environment...'
                 sh '''
+                    # Install Python 3 and pip
+                    apt-get update
+                    apt-get install -y python3 python3-pip python3-venv
                     python3 --version
                     pip3 --version
                 '''
