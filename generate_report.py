@@ -3,11 +3,10 @@
 Generate HTML test report for CI/CD demo
 """
 
-import json
-import os
 import datetime
 import subprocess
 from pathlib import Path
+
 
 def run_command(cmd):
     """Run a command and return output"""
@@ -17,30 +16,36 @@ def run_command(cmd):
     except Exception as e:
         return "", str(e), 1
 
+
 def generate_html_report():
     """Generate HTML test report"""
-    
+
     # Get git info
     git_commit, _, _ = run_command("git rev-parse HEAD")
     git_branch, _, _ = run_command("git rev-parse --abbrev-ref HEAD")
     git_message, _, _ = run_command("git log -1 --pretty=%B")
-    
+
     # Get current time
     build_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")
-    
+
     # Run tests and collect results
-    test_output, test_error, test_code = run_command("python -m pytest test_calc.py -v --tb=short")
-    
+    test_output, test_error, test_code = run_command(
+        "python -m pytest test_calc.py -v --tb=short"
+    )
+
     # Run linting
-    lint_output, lint_error, lint_code = run_command("flake8 calc.py --max-line-length=120")
-    
+    lint_output, lint_error, lint_code = run_command(
+        "flake8 calc.py --max-line-length=120"
+    )
+
     # Run coverage
-    coverage_output, coverage_error, coverage_code = run_command("python -m coverage run -m pytest test_calc.py && python -m coverage report")
-    
+    coverage_output, coverage_error, coverage_code = run_command(
+        "python -m coverage run -m pytest test_calc.py && python -m coverage report"
+    )
     # Build status
     overall_status = "✅ PASSED" if test_code == 0 and lint_code == 0 else "❌ FAILED"
     status_color = "green" if test_code == 0 and lint_code == 0 else "red"
-    
+
     # HTML template
     html_content = f"""
 <!DOCTYPE html>
@@ -136,11 +141,11 @@ def generate_html_report():
             <h1>🚀 CI/CD Demo - Test Report</h1>
             <p>Automated Testing & Deployment Pipeline</p>
         </div>
-        
+
         <div class="status">
             Build Status: {overall_status}
         </div>
-        
+
         <div class="info-grid">
             <div class="info-box">
                 <h3>📅 Build Time</h3>
@@ -159,7 +164,7 @@ def generate_html_report():
                 <p>{git_message.strip()}</p>
             </div>
         </div>
-        
+
         <div class="section">
             <h2>🧪 Test Results</h2>
             <div class="badge {'success' if test_code == 0 else 'error'}">
@@ -167,7 +172,7 @@ def generate_html_report():
             </div>
             <div class="code-block">{test_output}</div>
         </div>
-        
+
         <div class="section">
             <h2>📊 Code Quality</h2>
             <div class="badge {'success' if lint_code == 0 else 'warning'}">
@@ -175,12 +180,12 @@ def generate_html_report():
             </div>
             <div class="code-block">{lint_output if lint_output else 'No linting issues found!'}</div>
         </div>
-        
+
         <div class="section">
             <h2>📈 Test Coverage</h2>
             <div class="code-block">{coverage_output}</div>
         </div>
-        
+
         <div class="footer">
             <p>🤖 Generated automatically by CI/CD Pipeline</p>
             <p>Last updated: {build_time}</p>
@@ -189,17 +194,18 @@ def generate_html_report():
 </body>
 </html>
 """
-    
+
     # Create docs directory
     docs_dir = Path("docs")
     docs_dir.mkdir(exist_ok=True)
-    
+
     # Write HTML file
     with open(docs_dir / "index.html", "w") as f:
         f.write(html_content)
-    
+
     print("✅ HTML report generated successfully!")
     print("📄 Report saved to: docs/index.html")
+
 
 if __name__ == "__main__":
     generate_html_report()
