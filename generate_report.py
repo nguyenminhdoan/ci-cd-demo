@@ -187,7 +187,7 @@ def generate_html_report():
         </div>
 
         <div class="footer">
-            <p>🤖 Generated automatically by CI/CD Pipeline</p>
+            <p>Generated automatically by Group projecte</p>
             <p>Last updated: {build_time}</p>
         </div>
     </div>
