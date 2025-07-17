@@ -139,7 +139,7 @@ def generate_html_report():
     <div class="container">
         <div class="header">
             <h1>🚀 CI/CD Demo - Test Report</h1>
-            <p>Automated Testing & Deployment Pipeline</p>
+            <p>Automated Testing & Deployment Pipeline test 1</p>
         </div>
 
         <div class="status">
