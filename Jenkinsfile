@@ -57,9 +57,9 @@ pipeline {
                 echo 'Running unit tests...'
                 sh '''
                     . venv/bin/activate
-                    python -m unittest test_calc.py
-                    python -m unittest tests/github/test_calc_validation.py
-                    python -m unittest tests/github/test_calc_performance.py
+                    python -m pytest test_calc.py --junitxml=test-results.xml
+                    python -m pytest tests/github/test_calc_validation.py --junitxml=test-results-validation.xml
+                    python -m pytest tests/github/test_calc_performance.py --junitxml=test-results-performance.xml
                 '''
             }
         }
@@ -80,8 +80,11 @@ pipeline {
     post {
         always {
             echo 'Pipeline completed'
-            // Archive test results if needed
+            // Archive test results and coverage reports
             archiveArtifacts artifacts: 'htmlcov/**', allowEmptyArchive: true
+            
+            // Publish test results
+            publishTestResults testResultsPattern: 'test-results*.xml'
         }
         success {
             echo 'Pipeline succeeded!'
