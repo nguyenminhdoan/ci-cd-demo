@@ -84,7 +84,7 @@ pipeline {
             archiveArtifacts artifacts: 'htmlcov/**', allowEmptyArchive: true
             
             // Publish test results
-            publishTestResults testResultsPattern: 'test-results*.xml'
+            junit testResultsPattern: 'test-results*.xml'
         }
         success {
             echo 'Pipeline succeeded!'
