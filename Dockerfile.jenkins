@@ -29,6 +29,17 @@ RUN pip3 install --break-system-packages \
 # Switch back to jenkins user
 USER jenkins
 
+# Install Jenkins plugins
+RUN jenkins-plugin-cli --plugins \
+    git \
+    workflow-aggregator \
+    blueocean \
+    github \
+    build-timeout \
+    credentials-binding \
+    timestamper \
+    ws-cleanup
+
 # Set environment variables
 ENV PYTHON_VERSION=3.11
 ENV JENKINS_OPTS="--httpPort=8080"
